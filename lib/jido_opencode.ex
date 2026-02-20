@@ -1,8 +1,8 @@
-defmodule JidoOpenCode do
+defmodule Jido.OpenCode do
   @moduledoc """
   OpenCode CLI integration for the Jido Agent framework.
 
-  JidoOpenCode provides integration with the OpenCode CLI tool for code analysis and manipulation.
+  Jido.OpenCode provides integration with the OpenCode CLI tool for code analysis and manipulation.
 
   ## Overview
 
@@ -13,11 +13,11 @@ defmodule JidoOpenCode do
 
   ### Basic Query
 
-      {:ok, result} = JidoOpenCode.query("Analyze this codebase for security issues")
+      {:ok, result} = Jido.OpenCode.query("Analyze this codebase for security issues")
 
   ### Getting Version
 
-      JidoOpenCode.version()
+      Jido.OpenCode.version()
 
   ## Features
 
@@ -29,7 +29,7 @@ defmodule JidoOpenCode do
   """
 
   @doc """
-  Returns the version of the JidoOpenCode library.
+  Returns the version of the Jido.OpenCode library.
 
   ## Returns
 
@@ -37,7 +37,7 @@ defmodule JidoOpenCode do
 
   ## Example
 
-      iex> JidoOpenCode.version()
+      iex> Jido.OpenCode.version()
       "0.1.0"
 
   """
@@ -60,7 +60,7 @@ defmodule JidoOpenCode do
 
   ## Example
 
-      iex> JidoOpenCode.query("Analyze this codebase")
+      iex> Jido.OpenCode.query("Analyze this codebase")
       {:ok, %{"query" => "Analyze this codebase", "status" => "placeholder"}}
 
   """

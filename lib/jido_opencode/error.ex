@@ -1,6 +1,6 @@
-defmodule JidoOpenCode.Error do
+defmodule Jido.OpenCode.Error do
   @moduledoc """
-  Centralized error handling for JidoOpenCode using Splode.
+  Centralized error handling for Jido.OpenCode using Splode.
 
   Error classes are for classification; concrete error structs are for raising/matching.
 
@@ -20,7 +20,7 @@ defmodule JidoOpenCode.Error do
 
   ## Example
 
-      case JidoOpenCode.query(input) do
+      case Jido.OpenCode.query(input) do
         {:error, error} -> handle_error(error)
         {:ok, result} -> {:ok, result}
       end

@@ -1,4 +1,4 @@
-defmodule JidoOpenCode.MixProject do
+defmodule Jido.OpenCode.MixProject do
   use Mix.Project
 
   @version "0.1.0"
@@ -126,7 +126,7 @@ defmodule JidoOpenCode.MixProject do
       ],
       groups_for_modules: [
         Core: [
-          JidoOpenCode
+          Jido.OpenCode
         ]
       ]
     ]

@@ -1,4 +1,4 @@
-# Contributing to JidoOpenCode
+# Contributing to Jido.OpenCode
 
 ## Setup
 

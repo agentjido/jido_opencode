@@ -16,8 +16,8 @@
 
 This is an Elixir library for **OpenCode CLI integration** with the Jido Agent framework:
 
-- **JidoOpenCode** - Main entry module
-- **JidoOpenCode.Error** - Splode-based error handling
+- **Jido.OpenCode** - Main entry module
+- **Jido.OpenCode.Error** - Splode-based error handling
 
 ## Code Style Guidelines
 

@@ -50,10 +50,10 @@ Never use "WIP", "Temp", or unclear messages.
 
 ## Error Handling
 
-Use `JidoOpenCode.Error` module for all exceptions:
+Use `Jido.OpenCode.Error` module for all exceptions:
 
 ```elixir
-raise JidoOpenCode.Error.validation_error("Invalid input", %{field: "name"})
+raise Jido.OpenCode.Error.validation_error("Invalid input", %{field: "name"})
 ```
 
 ## Documentation Examples

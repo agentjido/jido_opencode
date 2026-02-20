@@ -1,4 +1,4 @@
-# JidoOpenCode
+# Jido.OpenCode
 
 OpenCode CLI integration for the Jido Agent framework.
 
@@ -19,7 +19,7 @@ mix deps.get
 ## Quick Start
 
 ```elixir
-{:ok, result} = JidoOpenCode.query("Analyze this codebase")
+{:ok, result} = Jido.OpenCode.query("Analyze this codebase")
 ```
 
 ## Documentation
