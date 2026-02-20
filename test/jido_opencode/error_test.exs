@@ -31,6 +31,14 @@ defmodule Jido.OpenCode.ErrorTest do
     end
   end
 
+  describe "config_error/2" do
+    test "creates ConfigError with message and key" do
+      error = Jido.OpenCode.Error.config_error("missing config", %{key: :opencode_cli_not_found})
+      assert error.message == "missing config"
+      assert error.key == :opencode_cli_not_found
+    end
+  end
+
   describe "error classes" do
     test "Invalid class exists" do
       assert Jido.OpenCode.Error.Invalid

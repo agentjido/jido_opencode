@@ -1,43 +1,62 @@
 defmodule Jido.OpenCodeTest do
-  @moduledoc """
-  Tests for the Jido.OpenCode module.
-  """
+  use ExUnit.Case, async: false
 
-  use ExUnit.Case
-  doctest Jido.OpenCode
+  alias Jido.Harness.Event
+  alias Jido.Harness.RunRequest
+  alias Jido.OpenCode.Test.StubAdapter
 
-  describe "query/1" do
-    test "returns ok tuple with result map" do
-      assert {:ok, result} = Jido.OpenCode.query("test query")
-      assert is_map(result)
-      assert result["query"] == "test query"
-      assert result["status"] == "placeholder"
-    end
+  setup do
+    old_adapter_module = Application.get_env(:jido_opencode, :adapter_module)
+    old_adapter_run = Application.get_env(:jido_opencode, :stub_adapter_run)
 
-    test "returns ok tuple for various query strings" do
-      queries = [
-        "Analyze this codebase",
-        "What are the security issues?",
-        "Show me the API surface"
-      ]
+    Application.put_env(:jido_opencode, :adapter_module, StubAdapter)
 
-      Enum.each(queries, fn query ->
-        assert {:ok, result} = Jido.OpenCode.query(query)
-        assert result["query"] == query
-      end)
-    end
+    Application.put_env(:jido_opencode, :stub_adapter_run, fn request, opts ->
+      send(self(), {:adapter_run, request, opts})
+
+      {:ok,
+       [
+         Event.new!(%{
+           type: :session_completed,
+           provider: :opencode,
+           session_id: "op-1",
+           timestamp: DateTime.utc_now() |> DateTime.to_iso8601(),
+           payload: %{"status" => "success"},
+           raw: nil
+         })
+       ]}
+    end)
+
+    on_exit(fn ->
+      restore_env(:jido_opencode, :adapter_module, old_adapter_module)
+      restore_env(:jido_opencode, :stub_adapter_run, old_adapter_run)
+    end)
+
+    :ok
   end
 
-  describe "version/0" do
-    test "returns version string" do
-      version = Jido.OpenCode.version()
-      assert is_binary(version)
-      assert version == "0.1.0"
-    end
-
-    test "version format is valid" do
-      version = Jido.OpenCode.version()
-      assert String.match?(version, ~r/^\d+\.\d+\.\d+$/)
-    end
+  test "version/0 returns semver" do
+    assert Jido.OpenCode.version() =~ ~r/^\d+\.\d+\.\d+$/
   end
+
+  test "run/2 builds run request and delegates to adapter" do
+    assert {:ok, stream} = Jido.OpenCode.run("hello", cwd: "/repo", model: "m1", timeout_ms: 1000)
+    events = Enum.to_list(stream)
+
+    assert_receive {:adapter_run, %RunRequest{} = request, opts}
+    assert request.prompt == "hello"
+    assert request.cwd == "/repo"
+    assert request.model == "m1"
+    assert request.timeout_ms == 1000
+    assert opts[:cwd] == "/repo"
+    assert Enum.map(events, & &1.type) == [:session_completed]
+  end
+
+  test "query/1 delegates to run/2 with real semantics" do
+    assert {:ok, stream} = Jido.OpenCode.query("analyze this repo")
+    assert [%Event{type: :session_completed}] = Enum.to_list(stream)
+  end
+
+  defp restore_env(app, key, nil), do: Application.delete_env(app, key)
+  defp restore_env(app, key, value), do: Application.put_env(app, key, value)
 end

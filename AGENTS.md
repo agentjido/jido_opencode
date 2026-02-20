@@ -14,9 +14,13 @@
 
 ## Architecture
 
-This is an Elixir library for **OpenCode CLI integration** with the Jido Agent framework:
+This is an Elixir library for an **OpenCode CLI adapter** in the Jido harness ecosystem:
 
-- **Jido.OpenCode** - Main entry module
+- **Jido.OpenCode** - Public entry module
+- **Jido.OpenCode.Adapter** - `Jido.Harness.Adapter` implementation
+- **Jido.OpenCode.Mapper** - OpenCode JSON to `Jido.Harness.Event` mapping
+- **Jido.OpenCode.Compatibility** - CLI compatibility probes
+- **Jido.OpenCode.CLI** - Command execution wrapper
 - **Jido.OpenCode.Error** - Splode-based error handling
 
 ## Code Style Guidelines

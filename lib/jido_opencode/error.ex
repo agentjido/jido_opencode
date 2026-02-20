@@ -1,30 +1,6 @@
 defmodule Jido.OpenCode.Error do
   @moduledoc """
-  Centralized error handling for Jido.OpenCode using Splode.
-
-  Error classes are for classification; concrete error structs are for raising/matching.
-
-  ## Error Classification
-
-  Errors are organized into four categories:
-  - `:invalid` - Invalid input or configuration parameters
-  - `:execution` - Runtime execution failures (e.g., CLI failures, timeouts)
-  - `:config` - Configuration issues
-  - `:internal` - Internal system errors
-
-  ## Helper Functions
-
-  Use the provided helpers for consistent error creation:
-  - `validation_error/2` - Create validation errors with details
-  - `execution_error/2` - Create execution failure errors
-
-  ## Example
-
-      case Jido.OpenCode.query(input) do
-        {:error, error} -> handle_error(error)
-        {:ok, result} -> {:ok, result}
-      end
-
+  Centralized error handling for Jido.OpenCode.
   """
 
   use Splode,
@@ -36,24 +12,23 @@ defmodule Jido.OpenCode.Error do
     ],
     unknown_error: __MODULE__.Internal.UnknownError
 
-  # Error classes – classification only
   defmodule Invalid do
-    @moduledoc "Invalid input error class for Splode."
+    @moduledoc false
     use Splode.ErrorClass, class: :invalid
   end
 
   defmodule Execution do
-    @moduledoc "Execution error class for Splode."
+    @moduledoc false
     use Splode.ErrorClass, class: :execution
   end
 
   defmodule Config do
-    @moduledoc "Configuration error class for Splode."
+    @moduledoc false
     use Splode.ErrorClass, class: :config
   end
 
   defmodule Internal do
-    @moduledoc "Internal error class for Splode."
+    @moduledoc false
     use Splode.ErrorClass, class: :internal
 
     defmodule UnknownError do
@@ -62,67 +37,60 @@ defmodule Jido.OpenCode.Error do
     end
   end
 
-  # Concrete exception structs – raise/rescue these
   defmodule InvalidInputError do
-    @moduledoc """
-    Error for invalid input parameters.
-
-    Fields:
-    - `message` - Human-readable error message
-    - `field` - The field that caused the error (optional)
-    - `value` - The problematic value (optional)
-    - `details` - Additional error context (optional)
-    """
+    @moduledoc "Raised when input validation fails."
+    @type t :: %__MODULE__{message: String.t() | nil, field: term(), value: term(), details: term()}
     defexception [:message, :field, :value, :details]
   end
 
   defmodule ExecutionFailureError do
-    @moduledoc """
-    Error for runtime execution failures.
-
-    Fields:
-    - `message` - Human-readable error message
-    - `details` - Additional error context and diagnostics
-    """
+    @moduledoc "Raised when CLI execution fails."
+    @type t :: %__MODULE__{message: String.t() | nil, details: term()}
     defexception [:message, :details]
   end
 
-  # Helper functions
-
-  @doc """
-  Create a validation error with detailed context.
-
-  ## Parameters
-
-    * `message` - Error message
-    * `details` - Map of additional error details (default: `%{}`)
-
-  ## Returns
-
-    * An `InvalidInputError` exception struct
-
-  """
-  @spec validation_error(String.t(), map()) :: %InvalidInputError{}
-  def validation_error(message, details \\ %{}) do
-    opts = [message: message] ++ Enum.to_list(details)
-    InvalidInputError.exception(opts)
+  defmodule ConfigError do
+    @moduledoc "Raised when CLI compatibility/configuration checks fail."
+    @type t :: %__MODULE__{message: String.t() | nil, key: term(), details: term()}
+    defexception [:message, :key, :details]
   end
 
-  @doc """
-  Create an execution failure error with diagnostic details.
+  @doc "Creates a validation error."
+  @spec validation_error(String.t(), map()) :: InvalidInputError.t()
+  def validation_error(message, details \\ %{}) do
+    field = Map.get(details, :field, Map.get(details, "field"))
+    value = Map.get(details, :value, Map.get(details, "value"))
 
-  ## Parameters
+    extra_details =
+      details
+      |> Map.drop([:field, "field", :value, "value"])
+      |> case do
+        map when map_size(map) == 0 -> nil
+        map -> map
+      end
 
-    * `message` - Error message describing the failure
-    * `details` - Map of diagnostic information (default: `%{}`)
+    InvalidInputError.exception(message: message, field: field, value: value, details: extra_details)
+  end
 
-  ## Returns
-
-    * An `ExecutionFailureError` exception struct
-
-  """
-  @spec execution_error(String.t(), map()) :: %ExecutionFailureError{}
+  @doc "Creates an execution error."
+  @spec execution_error(String.t(), map()) :: ExecutionFailureError.t()
   def execution_error(message, details \\ %{}) do
     ExecutionFailureError.exception(message: message, details: details)
+  end
+
+  @doc "Creates a configuration error."
+  @spec config_error(String.t(), map()) :: ConfigError.t()
+  def config_error(message, details \\ %{}) do
+    key = Map.get(details, :key, Map.get(details, "key"))
+
+    extra_details =
+      details
+      |> Map.drop([:key, "key"])
+      |> case do
+        map when map_size(map) == 0 -> nil
+        map -> map
+      end
+
+    ConfigError.exception(message: message, key: key, details: extra_details)
   end
 end

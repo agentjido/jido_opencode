@@ -3,7 +3,7 @@ defmodule Jido.OpenCode.MixProject do
 
   @version "0.1.0"
   @source_url "https://github.com/agentjido/jido_opencode"
-  @description "OpenCode CLI integration for the Jido Agent framework"
+  @description "OpenCode CLI adapter for Jido.Harness"
 
   def project do
     [
@@ -66,7 +66,8 @@ defmodule Jido.OpenCode.MixProject do
       {:jason, "~> 1.4"},
       {:zoi, "~> 0.17"},
       {:splode, ">= 0.2.9 and < 0.4.0"},
-      {:uniq, "~> 0.6"}
+      {:uniq, "~> 0.6"},
+      harness_dep()
     ]
   end
 
@@ -103,7 +104,7 @@ defmodule Jido.OpenCode.MixProject do
   defp package do
     [
       files: ["config", "lib", "mix.exs", "README.md", "LICENSE", "CHANGELOG.md", "usage-rules.md"],
-      maintainers: ["Mike Hostetler"],
+      maintainers: ["Agent Jido Team"],
       licenses: ["Apache-2.0"],
       links: %{
         "Changelog" => "https://hexdocs.pm/jido_opencode/changelog.html",
@@ -126,9 +127,22 @@ defmodule Jido.OpenCode.MixProject do
       ],
       groups_for_modules: [
         Core: [
-          Jido.OpenCode
+          Jido.OpenCode,
+          Jido.OpenCode.Adapter,
+          Jido.OpenCode.CLI,
+          Jido.OpenCode.Compatibility,
+          Jido.OpenCode.Mapper,
+          Jido.OpenCode.Options
         ]
       ]
     ]
+  end
+
+  defp harness_dep do
+    if File.dir?("../jido_harness") do
+      {:jido_harness, "~> 0.1", path: "../jido_harness", override: true}
+    else
+      {:jido_harness, "~> 0.1"}
+    end
   end
 end
