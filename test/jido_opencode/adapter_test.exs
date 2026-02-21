@@ -14,7 +14,6 @@ defmodule Jido.OpenCode.AdapterTest do
 
   setup do
     old_harness_providers = Application.get_env(:jido_harness, :providers)
-    old_harness_candidates = Application.get_env(:jido_harness, :provider_candidates)
     old_compatibility_module = Application.get_env(:jido_opencode, :compatibility_module)
     old_options_module = Application.get_env(:jido_opencode, :options_module)
     old_cli_module = Application.get_env(:jido_opencode, :cli_module)
@@ -48,7 +47,6 @@ defmodule Jido.OpenCode.AdapterTest do
       restore_env(:jido_opencode, :stub_cli_run, old_cli_run)
       restore_env(:jido_opencode, :stub_mapper_map_event, old_mapper_map_event)
       restore_env(:jido_harness, :providers, old_harness_providers)
-      restore_env(:jido_harness, :provider_candidates, old_harness_candidates)
     end)
 
     :ok
@@ -112,7 +110,6 @@ defmodule Jido.OpenCode.AdapterTest do
 
   test "Jido.Harness.run_request/3 works with :opencode provider" do
     Application.put_env(:jido_harness, :providers, %{opencode: Adapter})
-    Application.put_env(:jido_harness, :provider_candidates, %{})
 
     request = RunRequest.new!(%{prompt: "hello", cwd: "/repo", metadata: %{}})
     assert {:ok, stream} = Jido.Harness.run_request(:opencode, request, [])
