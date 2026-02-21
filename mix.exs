@@ -67,7 +67,7 @@ defmodule Jido.OpenCode.MixProject do
       {:zoi, "~> 0.17"},
       {:splode, ">= 0.2.9 and < 0.4.0"},
       {:uniq, "~> 0.6"},
-      harness_dep()
+      {:jido_harness, github: "agentjido/jido_harness", branch: "main", override: true}
     ]
   end
 
@@ -136,13 +136,5 @@ defmodule Jido.OpenCode.MixProject do
         ]
       ]
     ]
-  end
-
-  defp harness_dep do
-    if File.dir?("../jido_harness") do
-      {:jido_harness, "~> 0.1", path: "../jido_harness", override: true}
-    else
-      {:jido_harness, "~> 0.1"}
-    end
   end
 end

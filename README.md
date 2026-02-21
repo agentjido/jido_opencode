@@ -62,3 +62,13 @@ Current adapter behavior is intentionally conservative:
 ## License
 
 Apache-2.0
+
+## Package Purpose
+
+`jido_opencode` is the OpenCode adapter package for `jido_harness`, currently scoped to Z.AI-compatible runtime/auth flows.
+
+## Testing Paths
+
+- Unit/contract tests: `mix test`
+- Full quality gate: `mix quality`
+- Optional live checks: `mix opencode.install && mix opencode.compat && mix opencode.smoke "hello"`
