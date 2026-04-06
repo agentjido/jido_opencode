@@ -1,9 +1,9 @@
 defmodule Jido.OpenCode.MixProject do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "0.2.0"
   @source_url "https://github.com/agentjido/jido_opencode"
-  @description "OpenCode CLI adapter for Jido.Harness"
+  @description "OpenCode HTTP API adapter for Jido.Harness with streaming support"
 
   def project do
     [
@@ -52,6 +52,7 @@ defmodule Jido.OpenCode.MixProject do
 
   def application do
     [
+      mod: {Jido.OpenCode.Application, []},
       extra_applications: [:logger]
     ]
   end
@@ -67,6 +68,7 @@ defmodule Jido.OpenCode.MixProject do
       {:zoi, "~> 0.17"},
       {:splode, ">= 0.2.9 and < 0.4.0"},
       {:uniq, "~> 0.6"},
+      {:req, "~> 0.5"},
       {:jido_harness, github: "agentjido/jido_harness", branch: "main", override: true}
     ]
   end
@@ -103,7 +105,15 @@ defmodule Jido.OpenCode.MixProject do
 
   defp package do
     [
-      files: ["config", "lib", "mix.exs", "README.md", "LICENSE", "CHANGELOG.md", "usage-rules.md"],
+      files: [
+        "config",
+        "lib",
+        "mix.exs",
+        "README.md",
+        "LICENSE",
+        "CHANGELOG.md",
+        "usage-rules.md"
+      ],
       maintainers: ["Agent Jido Team"],
       licenses: ["Apache-2.0"],
       links: %{
@@ -129,8 +139,13 @@ defmodule Jido.OpenCode.MixProject do
         Core: [
           Jido.OpenCode,
           Jido.OpenCode.Adapter,
-          Jido.OpenCode.CLI,
+          Jido.OpenCode.Client,
           Jido.OpenCode.Compatibility,
+          Jido.OpenCode.EventTranslator,
+          Jido.OpenCode.SessionRegistry
+        ],
+        "Legacy (CLI)": [
+          Jido.OpenCode.CLI,
           Jido.OpenCode.Mapper,
           Jido.OpenCode.Options
         ]

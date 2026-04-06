@@ -1,31 +1,33 @@
 defmodule Jido.OpenCode.Compatibility do
   @moduledoc """
-  Runtime compatibility checks for local OpenCode CLI features.
+  Runtime compatibility checks for OpenCode HTTP server.
   """
 
-  alias Jido.OpenCode.Error
+  alias Jido.OpenCode.{Client, Error}
 
-  @command_timeout 5_000
-  @required_help_tokens ["run"]
-  @required_run_help_tokens ["--format", "json"]
+  @default_port 4096
+  @default_host "localhost"
 
-  @doc "Returns compatibility metadata for the current OpenCode CLI."
+  @doc "Returns compatibility metadata for the OpenCode HTTP server."
   @spec status(keyword()) :: {:ok, map()} | {:error, Exception.t()}
   def status(opts \\ []) when is_list(opts) do
-    with {:ok, spec} <- resolve_cli(opts),
-         {:ok, help_output} <- read_help(spec.program, ["--help"], :opencode_help),
-         :ok <- ensure_tokens(help_output, @required_help_tokens, :opencode_help),
-         {:ok, run_help_output} <- read_help(spec.program, ["run", "--help"], :opencode_run_help),
-         :ok <- ensure_tokens(run_help_output, @required_run_help_tokens, :opencode_run_help) do
+    host = Keyword.get(opts, :host, @default_host)
+    port = Keyword.get(opts, :port, @default_port)
+
+    if Client.server_running?(opts) do
       {:ok,
        %{
-         program: spec.program,
-         version: read_version(spec.program),
-         required_tokens: %{
-           opencode_help: @required_help_tokens,
-           opencode_run_help: @required_run_help_tokens
-         }
+         host: host,
+         port: port,
+         server: :running,
+         version: "unknown"
        }}
+    else
+      {:error,
+       Error.config_error("OpenCode server is not running", %{
+         key: :opencode_server_unavailable,
+         details: "Ensure opencode server is running on port #{port}"
+       })}
     end
   end
 
@@ -41,10 +43,10 @@ defmodule Jido.OpenCode.Compatibility do
   @doc "Boolean predicate for compatibility checks."
   @spec compatible?(keyword()) :: boolean()
   def compatible?(opts \\ []) when is_list(opts) do
-    match?({:ok, _}, status(opts))
+    Client.server_running?(opts)
   end
 
-  @doc "Raises when current OpenCode CLI is incompatible."
+  @doc "Raises when OpenCode server is incompatible."
   @spec assert_compatible!(keyword()) :: :ok | no_return()
   def assert_compatible!(opts \\ []) when is_list(opts) do
     case check(opts) do
@@ -56,51 +58,14 @@ defmodule Jido.OpenCode.Compatibility do
   @doc "Returns true when an OpenCode CLI binary can be resolved."
   @spec cli_installed?(keyword()) :: boolean()
   def cli_installed?(opts \\ []) when is_list(opts) do
-    match?({:ok, _}, resolve_cli(opts))
+    # Keep for backward compatibility
+    match?({:ok, _}, Jido.OpenCode.CLI.resolve(opts))
   end
 
-  defp resolve_cli(opts) do
-    case cli_module().resolve(opts) do
-      {:ok, spec} ->
-        {:ok, spec}
-
-      {:error, reason} ->
-        {:error, Error.config_error("OpenCode CLI is not available", %{key: :opencode_cli_not_found, details: reason})}
-    end
-  end
-
-  defp read_help(program, args, probe_key) do
-    case command_module().run(program, args, timeout: @command_timeout) do
-      {:ok, output} ->
-        {:ok, output}
-
-      {:error, reason} ->
-        {:error,
-         Error.config_error("Unable to read OpenCode CLI help output", %{key: probe_key, details: inspect(reason)})}
-    end
-  end
-
-  defp ensure_tokens(help_output, tokens, probe_key) do
-    missing = Enum.reject(tokens, &String.contains?(help_output, &1))
-
-    case missing do
-      [] ->
-        :ok
-
-      _ ->
-        {:error,
-         Error.config_error("OpenCode CLI is incompatible with JSON run mode", %{
-           key: probe_key,
-           details: %{missing_tokens: missing}
-         })}
-    end
-  end
-
-  defp read_version(program) do
-    case command_module().run(program, ["--version"], timeout: @command_timeout) do
-      {:ok, version} -> String.trim(version)
-      {:error, _reason} -> "unknown"
-    end
+  @doc "Returns true when OpenCode server is running on port 4096."
+  @spec server_running?(keyword()) :: boolean()
+  def server_running?(opts \\ []) when is_list(opts) do
+    Client.server_running?(opts)
   end
 
   defp cli_module do
