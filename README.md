@@ -1,8 +1,16 @@
 # Jido.OpenCode
 
-`jido_opencode` is a `jido_harness` adapter for the OpenCode CLI.
+`jido_opencode` is a `jido_harness` adapter for the OpenCode HTTP API.
 
-This package maps OpenCode JSON output into normalized `Jido.Harness.Event` structs and publishes runtime contract metadata for harness execution flows.
+This package communicates with the OpenCode server on port 4096 via streaming HTTP API, translating SSE events into normalized `Jido.Harness.Event` structs. Supports multi-provider configuration (OpenAI, Anthropic, Z.AI, Gemini, etc.).
+
+## Features
+
+- **Streaming**: Real-time SSE streaming with `streaming?: true`
+- **Multi-Provider**: Support for OpenAI, Anthropic, Z.AI, Gemini, and more
+- **Tool Calls**: Function calling and tool use support
+- **Cancellation**: Cancel active streaming sessions via `SessionRegistry`
+- **Usage Tracking**: Token usage reporting in events
 
 ## Installation
 
@@ -10,7 +18,7 @@ Add dependencies:
 
 ```elixir
 {:jido_harness, "~> 0.1"}
-{:jido_opencode, "~> 0.1"}
+{:jido_opencode, "~> 0.2"}
 ```
 
 Then install deps:
@@ -19,13 +27,33 @@ Then install deps:
 mix deps.get
 ```
 
+## Prerequisites
+
+Ensure the OpenCode server is running:
+
+```bash
+opencode server --port 4096
+```
+
+Or verify it's running:
+
+```elixir
+Jido.OpenCode.server_running?()
+# => true
+```
+
 ## Usage
 
-Run directly:
+Run directly with streaming:
 
 ```elixir
 {:ok, stream} = Jido.OpenCode.run("Return exactly: OK", cwd: "/repo")
-events = Enum.to_list(stream)
+
+# Process events as they arrive
+Enum.each(stream, fn event ->
+  IO.inspect(event.type)
+  IO.inspect(event.payload)
+end)
 ```
 
 Run via harness:
@@ -35,29 +63,59 @@ request = Jido.Harness.RunRequest.new!(%{prompt: "Summarize changes", cwd: "/rep
 {:ok, stream} = Jido.Harness.run(:opencode, request)
 ```
 
-## Runtime Requirements (Z.AI v1)
+Cancel a session:
 
-- Required env: `ZAI_API_KEY`
-- Optional env:
-  - `ZAI_BASE_URL` (defaulted in runtime contract to `https://api.z.ai/api/anthropic`)
-  - `OPENCODE_MODEL` (defaulted to `zai_custom/glm-4.5-air`)
-- CLI: `opencode` (install via `npm install -g opencode-ai`)
-
-Helpful tasks:
-
-```bash
-mix opencode.install
-mix opencode.compat
-mix opencode.smoke "Return exactly: JIDO_OPENCODE_SMOKE_OK"
+```elixir
+Jido.OpenCode.cancel_session(session_id)
 ```
+
+## Multi-Provider Configuration
+
+Configure your preferred provider:
+
+```elixir
+# OpenAI
+{:ok, stream} = Jido.OpenCode.run(
+  "Analyze this code",
+  cwd: "/repo",
+  model: "gpt-4",
+  provider: %{provider: "openai"}
+)
+
+# Anthropic
+{:ok, stream} = Jido.OpenCode.run(
+  "Analyze this code",
+  cwd: "/repo",
+  model: "claude-3-opus",
+  provider: %{provider: "anthropic"}
+)
+
+# Z.AI
+{:ok, stream} = Jido.OpenCode.run(
+  "Analyze this code",
+  cwd: "/repo",
+  model: "zai_custom/glm-4.5-air",
+  provider: %{
+    provider: "zai_custom",
+    baseURL: System.get_env("ZAI_BASE_URL"),
+    apiKey: System.get_env("ZAI_API_KEY")
+  }
+)
+```
+
+## Runtime Requirements
+
+- OpenCode server running on port 4096
+- One of: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `ZAI_API_KEY`, or `GEMINI_API_KEY`
+- Optional: `OPENCODE_MODEL` environment variable
 
 ## Capability Notes
 
-Current adapter behavior is intentionally conservative:
-
-- `streaming?` is `false` in v1 (`run/2` is buffered-first)
-- `cancellation?` is `false`
-- Scope is Z.AI-focused runtime contract support
+- `streaming?` is `true` - Real-time SSE streaming
+- `tool_calls?` is `true` - Function calling supported
+- `cancellation?` is `true` - Cancel active sessions
+- `multiple_models?` is `true` - Multi-provider support
+- `usage_tracking?` is `true` - Token usage in events
 
 ## License
 
@@ -65,10 +123,10 @@ Apache-2.0
 
 ## Package Purpose
 
-`jido_opencode` is the OpenCode adapter package for `jido_harness`, currently scoped to Z.AI-compatible runtime/auth flows.
+`jido_opencode` is the OpenCode adapter package for `jido_harness`, providing HTTP API-based streaming with multi-provider support.
 
 ## Testing Paths
 
 - Unit/contract tests: `mix test`
 - Full quality gate: `mix quality`
-- Optional live checks: `mix opencode.install && mix opencode.compat && mix opencode.smoke "hello"`
+- Server check: `mix opencode.check`
