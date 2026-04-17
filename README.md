@@ -74,3 +74,24 @@ Apache-2.0
 - Unit/contract tests: `mix test`
 - Full quality gate: `mix quality`
 - Optional live checks: `mix opencode.install && mix opencode.compat && mix opencode.smoke "hello"`
+
+## Live Integration Test
+
+`jido_opencode` includes an opt-in live adapter test that runs the real OpenCode CLI through the harness adapter path:
+
+```bash
+mix test --include integration test/jido_opencode/integration/adapter_live_integration_test.exs
+```
+
+The test auto-loads `.env` and is excluded from default `mix test` runs.
+
+Environment knobs:
+
+- `ZAI_API_KEY` for OpenCode auth
+- `ZAI_BASE_URL` and `OPENCODE_MODEL` for custom endpoint/model selection
+- `JIDO_OPENCODE_LIVE_PROMPT` to override the default prompt
+- `JIDO_OPENCODE_LIVE_CWD` to override the working directory
+- `JIDO_OPENCODE_LIVE_MODEL` to force a specific model
+- `JIDO_OPENCODE_LIVE_TIMEOUT_MS` to extend the per-run timeout
+- `JIDO_OPENCODE_REQUIRE_SUCCESS=1` to fail unless the terminal event is successful
+- `JIDO_OPENCODE_CLI_PATH` to target a non-default OpenCode CLI binary
