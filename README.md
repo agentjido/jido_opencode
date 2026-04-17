@@ -9,9 +9,11 @@ This package maps OpenCode JSON output into normalized `Jido.Harness.Event` stru
 Add dependencies:
 
 ```elixir
-{:jido_harness, "~> 0.1"}
-{:jido_opencode, "~> 0.1"}
+{:jido_harness, github: "agentjido/jido_harness", branch: "main", override: true}
+{:jido_opencode, github: "agentjido/jido_opencode", branch: "main"}
 ```
+
+This repo is currently aligned as part of the GitHub-based harness package set rather than a Hex release line.
 
 Then install deps:
 
