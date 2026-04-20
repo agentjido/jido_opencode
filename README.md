@@ -39,10 +39,10 @@ request = Jido.Harness.RunRequest.new!(%{prompt: "Summarize changes", cwd: "/rep
 
 ## Runtime Requirements (Z.AI v1)
 
-- Required env: `ZAI_API_KEY`
+- Optional env: `ZAI_API_KEY` when using env-based Z.AI auth
 - Optional env:
   - `ZAI_BASE_URL` (defaulted in runtime contract to `https://api.z.ai/api/anthropic`)
-  - `OPENCODE_MODEL` (defaulted to `zai_custom/glm-4.5-air`)
+  - `OPENCODE_MODEL` (defaulted to `zai-coding-plan/glm-4.5-air`)
 - CLI: `opencode` (install via `npm install -g opencode-ai`)
 
 Helpful tasks:
@@ -67,7 +67,7 @@ Apache-2.0
 
 ## Package Purpose
 
-`jido_opencode` is the OpenCode adapter package for `jido_harness`, currently scoped to Z.AI-compatible runtime/auth flows.
+`jido_opencode` is the OpenCode adapter package for `jido_harness`, currently scoped to Z.AI-compatible runtime/auth flows using the installed `zai-coding-plan/*` provider models.
 
 ## Testing Paths
 
@@ -87,7 +87,7 @@ The test auto-loads `.env` and is excluded from default `mix test` runs.
 
 Environment knobs:
 
-- `ZAI_API_KEY` for OpenCode auth
+- `ZAI_API_KEY` when using env-based OpenCode auth
 - `ZAI_BASE_URL` and `OPENCODE_MODEL` for custom endpoint/model selection
 - `JIDO_OPENCODE_LIVE_PROMPT` to override the default prompt
 - `JIDO_OPENCODE_LIVE_CWD` to override the working directory

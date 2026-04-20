@@ -12,7 +12,7 @@ defmodule Jido.OpenCode.Options do
             __MODULE__,
             %{
               cwd: Zoi.string() |> Zoi.nullable() |> Zoi.optional(),
-              model: Zoi.string() |> Zoi.default("zai_custom/glm-4.5-air"),
+              model: Zoi.string() |> Zoi.default("zai-coding-plan/glm-4.5-air"),
               timeout_ms: Zoi.integer() |> Zoi.default(180_000),
               format: Zoi.string() |> Zoi.default("json"),
               env: Zoi.map(Zoi.string(), Zoi.string()) |> Zoi.default(%{}),

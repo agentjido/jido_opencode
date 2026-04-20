@@ -12,15 +12,14 @@ defmodule Jido.OpenCode.LiveIntegrationCase do
       import Jido.OpenCode.LiveIntegrationCase
 
       @moduletag :integration
-      @moduletag timeout: 180_000
+      @moduletag timeout: 240_000
     end
   end
 
   def skip_reason do
     ensure_env_loaded()
 
-    missing_auth_reason() ||
-      cli_skip_reason() ||
+    cli_skip_reason() ||
       compatibility_skip_reason()
   end
 
@@ -31,7 +30,7 @@ defmodule Jido.OpenCode.LiveIntegrationCase do
      prompt: live_prompt(),
      cwd: live_cwd(),
      model: env_value("JIDO_OPENCODE_LIVE_MODEL") || env_value("OPENCODE_MODEL"),
-     timeout_ms: env_integer("JIDO_OPENCODE_LIVE_TIMEOUT_MS", 180_000),
+     timeout_ms: env_integer("JIDO_OPENCODE_LIVE_TIMEOUT_MS", 60_000),
      cli_opts: cli_opts(),
      require_success?: truthy?(System.get_env("JIDO_OPENCODE_REQUIRE_SUCCESS"))}
   end
@@ -48,14 +47,6 @@ defmodule Jido.OpenCode.LiveIntegrationCase do
     case env_value("JIDO_OPENCODE_CLI_PATH") || env_value("OPENCODE_CLI_PATH") do
       nil -> []
       path -> [opencode_path: path]
-    end
-  end
-
-  defp missing_auth_reason do
-    if env_value("ZAI_API_KEY") do
-      nil
-    else
-      "set ZAI_API_KEY to run OpenCode integration tests"
     end
   end
 

@@ -57,7 +57,8 @@ defmodule Jido.OpenCode.CLI do
       args,
       timeout: options.timeout_ms,
       cd: options.cwd,
-      env: env_to_list(options.env)
+      env: env_to_list(options.env),
+      pty: true
     )
   end
 
