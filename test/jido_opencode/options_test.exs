@@ -6,7 +6,7 @@ defmodule Jido.OpenCode.OptionsTest do
 
   test "new/1 applies defaults" do
     assert {:ok, options} = Options.new(%{})
-    assert options.model == "zai_custom/glm-4.5-air"
+    assert options.model == "zai-coding-plan/glm-4.5-air"
     assert options.format == "json"
     assert options.timeout_ms == 180_000
   end

@@ -9,9 +9,11 @@ This package maps OpenCode JSON output into normalized `Jido.Harness.Event` stru
 Add dependencies:
 
 ```elixir
-{:jido_harness, "~> 0.1"}
-{:jido_opencode, "~> 0.1"}
+{:jido_harness, github: "agentjido/jido_harness", branch: "main", override: true}
+{:jido_opencode, github: "agentjido/jido_opencode", branch: "main"}
 ```
+
+This repo is currently aligned as part of the GitHub-based harness package set rather than a Hex release line.
 
 Then install deps:
 
@@ -37,10 +39,10 @@ request = Jido.Harness.RunRequest.new!(%{prompt: "Summarize changes", cwd: "/rep
 
 ## Runtime Requirements (Z.AI v1)
 
-- Required env: `ZAI_API_KEY`
+- Optional env: `ZAI_API_KEY` when using env-based Z.AI auth
 - Optional env:
   - `ZAI_BASE_URL` (defaulted in runtime contract to `https://api.z.ai/api/anthropic`)
-  - `OPENCODE_MODEL` (defaulted to `zai_custom/glm-4.5-air`)
+  - `OPENCODE_MODEL` (defaulted to `zai-coding-plan/glm-4.5-air`)
 - CLI: `opencode` (install via `npm install -g opencode-ai`)
 
 Helpful tasks:
@@ -65,10 +67,31 @@ Apache-2.0
 
 ## Package Purpose
 
-`jido_opencode` is the OpenCode adapter package for `jido_harness`, currently scoped to Z.AI-compatible runtime/auth flows.
+`jido_opencode` is the OpenCode adapter package for `jido_harness`, currently scoped to Z.AI-compatible runtime/auth flows using the installed `zai-coding-plan/*` provider models.
 
 ## Testing Paths
 
 - Unit/contract tests: `mix test`
 - Full quality gate: `mix quality`
 - Optional live checks: `mix opencode.install && mix opencode.compat && mix opencode.smoke "hello"`
+
+## Live Integration Test
+
+`jido_opencode` includes an opt-in live adapter test that runs the real OpenCode CLI through the harness adapter path:
+
+```bash
+mix test --include integration test/jido_opencode/integration/adapter_live_integration_test.exs
+```
+
+The test auto-loads `.env` and is excluded from default `mix test` runs.
+
+Environment knobs:
+
+- `ZAI_API_KEY` when using env-based OpenCode auth
+- `ZAI_BASE_URL` and `OPENCODE_MODEL` for custom endpoint/model selection
+- `JIDO_OPENCODE_LIVE_PROMPT` to override the default prompt
+- `JIDO_OPENCODE_LIVE_CWD` to override the working directory
+- `JIDO_OPENCODE_LIVE_MODEL` to force a specific model
+- `JIDO_OPENCODE_LIVE_TIMEOUT_MS` to extend the per-run timeout
+- `JIDO_OPENCODE_REQUIRE_SUCCESS=1` to fail unless the terminal event is successful
+- `JIDO_OPENCODE_CLI_PATH` to target a non-default OpenCode CLI binary

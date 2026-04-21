@@ -101,13 +101,13 @@ defmodule Mix.Tasks.OpencodeTasksTest do
 
     output =
       capture_io(fn ->
-        Smoke.run(["Say hello", "--cwd", "/tmp/repo", "--timeout", "3000", "--model", "zai_custom/glm-4.5-air"])
+        Smoke.run(["Say hello", "--cwd", "/tmp/repo", "--timeout", "3000", "--model", "zai-coding-plan/glm-4.5-air"])
       end)
 
     assert_receive {:smoke_run, "Say hello", opts}
     assert opts[:cwd] == "/tmp/repo"
     assert opts[:timeout_ms] == 3000
-    assert opts[:model] == "zai_custom/glm-4.5-air"
+    assert opts[:model] == "zai-coding-plan/glm-4.5-air"
     assert output =~ "Smoke run completed"
   end
 

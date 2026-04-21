@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Opencode.Smoke do
   Execute a minimal OpenCode prompt for smoke validation.
 
       mix opencode.smoke "Return OK"
-      mix opencode.smoke "Summarize this repo" --cwd /path --timeout 30000 --model zai_custom/glm-4.5-air
+      mix opencode.smoke "Summarize this repo" --cwd /path --timeout 30000 --model zai-coding-plan/glm-4.5-air
   """
 
   @shortdoc "Run a minimal OpenCode smoke prompt"

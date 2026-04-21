@@ -56,7 +56,7 @@ defmodule Jido.OpenCode.Adapter do
         "GH_PROMPT_DISABLED" => "1",
         "GIT_TERMINAL_PROMPT" => "0",
         "ZAI_BASE_URL" => "https://api.z.ai/api/anthropic",
-        "OPENCODE_MODEL" => "zai_custom/glm-4.5-air"
+        "OPENCODE_MODEL" => "zai-coding-plan/glm-4.5-air"
       },
       runtime_tools_required: ["opencode"],
       compatibility_probes: [
@@ -80,35 +80,12 @@ defmodule Jido.OpenCode.Adapter do
         }
       ],
       auth_bootstrap_steps: [
-        """
-        cat > opencode.json <<'JIDO_OPENCODE_CONFIG_EOF'
-        {
-          "$schema": "https://opencode.ai/config.json",
-          "model": "{env:OPENCODE_MODEL}",
-          "provider": {
-            "zai_custom": {
-              "name": "Z.AI (Anthropic-compatible)",
-              "npm": "@ai-sdk/anthropic",
-              "options": {
-                "baseURL": "{env:ZAI_BASE_URL}",
-                "apiKey": "{env:ZAI_API_KEY}"
-              },
-              "models": {
-                "glm-4.5-air": {},
-                "glm-4.7": {},
-                "glm-5": {}
-              }
-            }
-          }
-        }
-        JIDO_OPENCODE_CONFIG_EOF
-        """,
-        "opencode models zai_custom 2>&1 | grep -q 'zai_custom/'"
+        "opencode models zai-coding-plan 2>&1 | grep -q 'zai-coding-plan/'"
       ],
       triage_command_template:
-        "if command -v timeout >/dev/null 2>&1; then timeout 120 opencode run --model ${OPENCODE_MODEL:-zai_custom/glm-4.5-air} --format json \"$(cat {{prompt_file}})\"; else opencode run --model ${OPENCODE_MODEL:-zai_custom/glm-4.5-air} --format json \"$(cat {{prompt_file}})\"; fi",
+        "if command -v timeout >/dev/null 2>&1; then timeout 120 opencode run --model ${OPENCODE_MODEL:-zai-coding-plan/glm-4.5-air} --format json \"$(cat {{prompt_file}})\"; else opencode run --model ${OPENCODE_MODEL:-zai-coding-plan/glm-4.5-air} --format json \"$(cat {{prompt_file}})\"; fi",
       coding_command_template:
-        "if command -v timeout >/dev/null 2>&1; then timeout 180 opencode run --model ${OPENCODE_MODEL:-zai_custom/glm-4.5-air} --format json \"$(cat {{prompt_file}})\"; else opencode run --model ${OPENCODE_MODEL:-zai_custom/glm-4.5-air} --format json \"$(cat {{prompt_file}})\"; fi",
+        "if command -v timeout >/dev/null 2>&1; then timeout 180 opencode run --model ${OPENCODE_MODEL:-zai-coding-plan/glm-4.5-air} --format json \"$(cat {{prompt_file}})\"; else opencode run --model ${OPENCODE_MODEL:-zai-coding-plan/glm-4.5-air} --format json \"$(cat {{prompt_file}})\"; fi",
       success_markers: [
         %{"type" => "result", "subtype" => "success"},
         %{"status" => "success"}

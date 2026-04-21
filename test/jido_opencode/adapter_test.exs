@@ -59,7 +59,7 @@ defmodule Jido.OpenCode.AdapterTest do
     assert "opencode" in contract.runtime_tools_required
     assert String.contains?(contract.triage_command_template, "opencode run")
     assert String.contains?(contract.coding_command_template, "opencode run")
-    assert Enum.any?(contract.auth_bootstrap_steps, &String.contains?(&1, "opencode models zai_custom"))
+    assert Enum.any?(contract.auth_bootstrap_steps, &String.contains?(&1, "opencode models zai-coding-plan"))
   end
 
   test "run/2 maps json output to harness events" do
