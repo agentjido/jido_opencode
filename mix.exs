@@ -26,7 +26,8 @@ defmodule Jido.OpenCode.MixProject do
       # Test Coverage
       test_coverage: [
         tool: ExCoveralls,
-        summary: [threshold: 90]
+        summary: [threshold: 90],
+        export: "cov"
       ],
 
       # Dialyzer
@@ -87,7 +88,8 @@ defmodule Jido.OpenCode.MixProject do
 
   defp aliases do
     [
-      setup: ["deps.get", "git_hooks.install"],
+      setup: ["deps.get"],
+      install_hooks: ["git_hooks.install"],
       test: "test --exclude flaky",
       q: ["quality"],
       quality: [
@@ -103,15 +105,15 @@ defmodule Jido.OpenCode.MixProject do
 
   defp package do
     [
-      files: ["config", "lib", "mix.exs", "README.md", "LICENSE", "CHANGELOG.md", "usage-rules.md"],
+      files: ["config", "lib", "mix.exs", "README.md", "LICENSE", "CHANGELOG.md", "CONTRIBUTING.md", "usage-rules.md"],
       maintainers: ["Agent Jido Team"],
       licenses: ["Apache-2.0"],
       links: %{
-        "Changelog" => "https://hexdocs.pm/jido_opencode/changelog.html",
-        "Discord" => "https://agentjido.xyz/discord",
+        "Changelog" => "https://github.com/agentjido/jido_opencode/blob/main/CHANGELOG.md",
+        "Discord" => "https://jido.run/discord",
         "Documentation" => "https://hexdocs.pm/jido_opencode",
         "GitHub" => @source_url,
-        "Website" => "https://agentjido.xyz"
+        "Website" => "https://jido.run"
       }
     ]
   end
@@ -123,7 +125,8 @@ defmodule Jido.OpenCode.MixProject do
       extras: [
         "README.md",
         "CHANGELOG.md",
-        "CONTRIBUTING.md"
+        "CONTRIBUTING.md",
+        "LICENSE"
       ],
       groups_for_modules: [
         Core: [
