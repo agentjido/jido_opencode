@@ -57,9 +57,6 @@ defmodule Jido.OpenCode.LiveIntegrationCase do
 
       {:error, :enoent} ->
         "OpenCode CLI is not available. Install it with `mix opencode.install`."
-
-      {:error, reason} ->
-        "OpenCode CLI could not be resolved: #{inspect(reason)}"
     end
   end
 
@@ -97,7 +94,6 @@ defmodule Jido.OpenCode.LiveIntegrationCase do
     end
   end
 
-  defp truthy?(true), do: true
   defp truthy?("true"), do: true
   defp truthy?("1"), do: true
   defp truthy?("yes"), do: true
