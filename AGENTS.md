@@ -35,6 +35,7 @@ This is an Elixir library for an **OpenCode CLI adapter** in the Jido harness ec
 ## Git Commit Guidelines
 
 Use **Conventional Commits** format for all commit messages:
+- Do not modify `CHANGELOG.md`; release notes are generated from Git history during release, so keep changes focused on proper Conventional Commits.
 
 ```
 <type>[optional scope]: <description>
