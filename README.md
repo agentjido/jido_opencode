@@ -1,5 +1,11 @@
 # Jido.OpenCode
 
+> [!WARNING]
+> **Deprecated.** This repository is no longer maintained and is retained as a
+> read-only archive. OpenCode support now lives directly in
+> [Jido Harness](https://github.com/agentjido/jido_harness). Use `jido_harness`
+> for new development.
+
 [![Hex.pm](https://img.shields.io/hexpm/v/jido_opencode.svg)](https://hex.pm/packages/jido_opencode)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/jido_opencode/)
 [![CI](https://github.com/agentjido/jido_opencode/actions/workflows/ci.yml/badge.svg)](https://github.com/agentjido/jido_opencode/actions/workflows/ci.yml)
